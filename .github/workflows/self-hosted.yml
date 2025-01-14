@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python environment
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y python3 python3-pip g++ make
+          sudo apt-get install -y python3 python3-pip g++ make screen
           pip3 install --upgrade pip
           pip3 install pyTelegramBotAPI pymongo aiohttp
 
@@ -26,4 +26,8 @@ jobs:
 
       - name: Run the Telegram Bot
         run: |
-          screen -dmS soul_bot python3 soul.py  # Run bot in a detached screen
+          screen -dmS soul_bot /usr/bin/python3 soul.py  # Run bot in a detached screen
+
+      - name: List Active Screen Sessions (Debugging)
+        run: |
+          screen -ls
