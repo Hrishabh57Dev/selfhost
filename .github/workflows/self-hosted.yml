@@ -27,3 +27,30 @@ jobs:
       - name: Start the Telegram Bot
         run: |
           python3 soul.py
+name: Self-Hosted Runner CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger from the GitHub UI
+
+jobs:
+  run-bot:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y python3 python3-pip g++ make
+          pip install --upgrade pip
+          pip3 install pyTelegramBotAPI python-dotenv python-telegram-bot
+      - name: Compile the C Program
+        run: |
+          gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+          chmod +x stronger_udp_attack
+      - name: Start the Telegram Bot
+        run: |
+          python3 soul.py
