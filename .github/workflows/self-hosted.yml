@@ -1,0 +1,29 @@
+name: Self-Hosted Runner CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual runs from the GitHub UI
+
+jobs:
+  run-bot:
+    runs-on: self-hosted  # Use your self-hosted runner
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python environment
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3 python3-pip g++ make
+          pip3 install --upgrade pip
+          pip3 install pyTelegramBotAPI pymongo aiohttp
+
+      - name: Compile C Script
+        run: |
+          g++ -std=c++14 stronger_udp_attack.c -o stronger_udp_attack -pthread
+
+      - name: Run the Telegram Bot
+        run: |
+          screen -dmS soul_bot python3 soul.py  # Run bot in a detached screen
