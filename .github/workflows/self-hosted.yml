@@ -16,8 +16,8 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update && apt-get install -y python3 python3-pip g++ make
-          pip install --upgrade pip
-          pip3 install pyTelegramBotAPI python-dotenv python-telegram-bot
+          pip install --upgrade pip --break-system-packages.
+          pip3 install pyTelegramBotAPI python-dotenv python-telegram-bot --break-system-packages.
 
       - name: Compile C++ Program (soulcracks.cpp)
         run: |
