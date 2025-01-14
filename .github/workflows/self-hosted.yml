@@ -25,6 +25,7 @@ jobs:
           # Upgrade pip in the virtual environment and install dependencies
           pip install --upgrade pip
           pip install pyTelegramBotAPI python-dotenv python-telegram-bot
+          pip install pyTelegramBotAPI pymongo aiohttp
 
       - name: Compile C++ Program (soulcracks)
         run: |
