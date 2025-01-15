@@ -21,8 +21,8 @@ jobs:
 
       - name: Install Python requirements
         run: |
-          pip3 install --upgrade pip
-          pip3 install pyTelegramBotAPI python-dotenv
+          pip3 install --upgrade pip --break-system-packages
+          pip3 install pyTelegramBotAPI python-dotenv --break-system-packages
 
       - name: Compile C++ Program
         run: |
