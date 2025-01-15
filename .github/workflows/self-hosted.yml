@@ -1,31 +1,36 @@
-name: Self-Hosted Runner CI
+name: Compile and Run C++ and Python Bot
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger from the GitHub UI
+  workflow_dispatch:  # Allow manual triggering of the workflow
 
 jobs:
-  run-cpp-program:
+  compile-and-run:
     runs-on: self-hosted
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Fetch repository content
 
-      - name: Install Dependencies for C++ Program
+      - name: Install dependencies
         run: |
-          # Use sudo to ensure elevated privileges for installing dependencies
-          sudo apt-get update && sudo apt-get install -y g++ make
+          sudo apt-get update
+          sudo apt-get install -y g++ python3 python3-pip
 
-      - name: Compile C++ Program (soulcracks)
+      - name: Install Python requirements
         run: |
-          g++ -std=c++14 soulcracks.cpp -o soul -pthread  # Compile the C++ program
+          pip3 install --upgrade pip
+          pip3 install pyTelegramBotAPI python-dotenv
+
+      - name: Compile C++ Program
+        run: |
+          # Compile soulcracks.cpp into the executable 'soul'
+          g++ -std=c++14 soulcracks.cpp -o soul -pthread
           chmod +x soul  # Make the binary executable
 
-      - name: Run C++ Program
+      - name: Start Telegram Bot
         run: |
-          # Execute the compiled C++ binary
-          ./soul > output.log 2>&1 &  # Capture C++ program output in the background
-          wait  # Wait for the process to finish
+          # Run the Python Telegram bot script
+          python3 soul.py
