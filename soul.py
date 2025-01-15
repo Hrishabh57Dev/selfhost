@@ -110,4 +110,5 @@ def start_message(message):
 
 # Main entry point for bot
 if __name__ == "__main__":
+    bot.remove_webhook()   # Clean up any existing webhook
     bot.polling(none_stop=True, interval=3, timeout=15)
