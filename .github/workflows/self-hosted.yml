@@ -16,8 +16,8 @@ jobs:
 
       - name: Install Dependencies for C++ Program
         run: |
-          # Install necessary system dependencies
-          apt-get update && apt-get install -y g++ make
+          # Use sudo to ensure elevated privileges for installing dependencies
+          sudo apt-get update && sudo apt-get install -y g++ make
 
       - name: Compile C++ Program (soulcracks)
         run: |
@@ -29,4 +29,3 @@ jobs:
           # Execute the compiled C++ binary
           ./soul > output.log 2>&1 &  # Capture C++ program output in the background
           wait  # Wait for the process to finish
-
