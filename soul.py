@@ -111,4 +111,4 @@ def start_message(message):
                                        "*🚀 Get ready to dive into the action!*")
 
 if __name__ == "__main__":
-    bot.polling(none_stop=True)
+    bot.polling(none_stop=True, interval=1, timeout=60)
