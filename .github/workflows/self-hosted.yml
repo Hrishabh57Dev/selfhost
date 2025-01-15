@@ -23,6 +23,8 @@ jobs:
         run: |
           pip3 install --upgrade pip --break-system-packages
           pip3 install pyTelegramBotAPI python-dotenv --break-system-packages
+          pip install --upgrade pyTelegramBotAPI --break-system-packages
+
 
       - name: Compile C++ Program
         run: |
