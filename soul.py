@@ -38,7 +38,7 @@ def process_attack_command(message):
 
         target_ip, target_port, duration = args[0], int(args[1]), int(args[2])
 
-        if target_port in [8700, 20000,20002,20001,, 443, 17500]:
+        if target_port in [8700, 20000,20002,20001, 443, 17500]:
             bot.send_message(message.chat.id, f"*🔒 Port {target_port} is blocked.*\n"
                                                "*Please select a different port to proceed.*", parse_mode='Markdown')
             return
